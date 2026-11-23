@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trial conversion</title>
+<!--
+  Starter page for the present-results skill (SKILL.md).
+  Everything on this page is EXAMPLE content. Replace every value, delete every component
+  you do not need, then run the deletion test (SKILL.md §1) and the ship checklist (§10).
+-->
+<style>
+/* Tokens: SKILL.md §6.1. Light by default, dark by OS setting or [data-theme="dark"]. */
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink2: #52514e; --muted: #6f6e69;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,.10); --hover: rgba(11,11,11,.04);
+  --neutral: #898781; --rest: #b5b4ac;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --hl: #e87ba4; --wash-hl: rgba(232,123,164,.28);
+  --tip-bg: #0b0b0b; --tip-ink: #f0efec;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink2: #c3c2b7; --muted: #9a9890;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10); --hover: rgba(255,255,255,.05);
+    --neutral: #898781; --rest: #5a5954;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --hl: #d55181; --wash-hl: rgba(213,81,129,.32);
+    --tip-bg: #f0efec; --tip-ink: #0b0b0b;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink2: #c3c2b7; --muted: #9a9890;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10); --hover: rgba(255,255,255,.05);
+  --neutral: #898781; --rest: #5a5954;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --hl: #d55181; --wash-hl: rgba(213,81,129,.32);
+  --tip-bg: #f0efec; --tip-ink: #0b0b0b;
+}
+
+/* Base */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 1140px; margin: 0 auto; padding: 32px 24px 48px; }
+@media (max-width: 640px) { .wrap { padding: 20px 16px 32px; } }
+h1 { font-size: 28px; line-height: 1.2; font-weight: 650; margin: 0; }
+h2 { font-size: 19px; line-height: 1.3; font-weight: 650; margin: 0; }
+p { margin: 0; }
+sup { font-size: 11px; color: var(--muted); line-height: 0; margin-left: 1px; }
+
+/* Header: title · finding line · grounding line */
+.head { margin-bottom: 8px; }
+.finding { font-size: 16px; line-height: 1.45; color: var(--ink); margin: 4px 0 20px; max-width: 860px; }
+.head .finding { margin: 8px 0 4px; }
+.ground { font-size: 13px; color: var(--ink2); }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-top: 16px; }
+@media (max-width: 640px) { .card { padding: 16px; } }
+.notes { list-style: none; padding: 0; margin: 16px 0 0; font-size: 13px; color: var(--muted); }
+
+/* At a glance: hero figure + tiles, then the split the hero is part of */
+.glance { display: grid; grid-template-columns: minmax(220px, 1fr) 2fr; gap: 24px; align-items: start; }
+.glance .split { grid-column: 1 / -1; }
+@media (max-width: 820px) { .glance { grid-template-columns: 1fr; } }
+.label { font-size: 13px; color: var(--ink2); }
+.hero-value { font-size: 56px; line-height: 1.05; font-weight: 650; letter-spacing: -.02em; margin: 2px 0 4px; }
+.base { font-size: 14px; color: var(--ink2); }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 24px; }
+@media (max-width: 420px) { .tiles { grid-template-columns: 1fr; } }
+.t-value { font-size: 26px; font-weight: 650; line-height: 1.2; margin: 2px 0; }
+.t-note { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+/* Segmented bar: parts sized by flex-grow = count, 2px surface gap, no text inside */
+.seg { display: flex; gap: 2px; width: 100%; }
+.seg.tall { height: 28px; margin-top: 8px; }
+.seg.thin { height: 10px; }
+.seg > span { flex-basis: 0; min-width: 2px; }
+.seg > span:first-child { border-radius: 4px 0 0 4px; }
+.seg > span:last-child { border-radius: 0 4px 4px 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; color: var(--ink2); margin: 8px 0 0; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 8px; }
+.sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.legend b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Ranked bars: label · bar · value, sorted; fixed label and value columns keep one scale across rows */
+.rank { display: grid; gap: 8px; }
+.rrow { display: grid; grid-template-columns: 160px 1fr 136px; grid-template-areas: "l b v"; gap: 12px; align-items: center; }
+.rl { grid-area: l; font-size: 14px; }
+.rb { grid-area: b; }
+.rb > i { display: block; height: 16px; background: var(--s1); border-radius: 0 4px 4px 0; }
+.rv { grid-area: v; font-size: 13px; color: var(--ink2); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+.rv b { color: var(--ink); font-weight: 600; }
+.rhead .rl, .rhead .rv { font-size: 12px; font-weight: 600; color: var(--ink2); }
+@media (max-width: 560px) { .rrow { grid-template-columns: 1fr auto; grid-template-areas: "l v" "b b"; gap: 4px 12px; } .rhead .rb { display: none; } }
+
+/* Small n: muted text, tag, faded bar */
+.smalln, .smalln .rv, .smalln .rv b, tr.smalln td { color: var(--muted); }
+.smalln .rb > i, tr.smalln .seg { opacity: .45; }
+.tag { display: inline-block; font-size: 12px; line-height: 1.4; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 6px; margin-left: 6px; white-space: nowrap; vertical-align: 1px; }
+
+/* Comparison table */
+.tablewrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--grid); vertical-align: middle; }
+th { font-size: 12px; font-weight: 600; color: var(--ink2); vertical-align: bottom; }
+.r { text-align: right; font-variant-numeric: tabular-nums; }
+td.barcell { width: 120px; min-width: 96px; }
+tbody tr:hover td { background: var(--hover); }
+
+/* Definitions and data */
+.defs { margin: 16px 0 0; display: grid; grid-template-columns: minmax(160px, 220px) 1fr; gap: 8px 20px; font-size: 14px; }
+.defs dt { font-weight: 600; }
+.defs dd { margin: 0; color: var(--ink2); }
+@media (max-width: 640px) { .defs { grid-template-columns: 1fr; } .defs dd { margin-bottom: 8px; } }
+
+/* Tooltip: only where the value is not printed nearby; hover, tap and keyboard focus */
+[data-tip] { cursor: default; }
+[data-tip]:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--tip-bg); color: var(--tip-ink); border-radius: 8px; padding: 8px 12px; font-size: 13px; max-width: 260px; box-shadow: 0 4px 16px rgba(0,0,0,.18); }
+@media print { #tip { display: none; } .card { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <!-- HEADER: title (topic) · finding line (the answer; may cite numbers shown below) · grounding line -->
+  <header class="head">
+    <h1>Trial conversion, Q3 2026</h1>
+    <p class="finding">20% of finished trials converted. Business trials converted 33% (63 of 190), 18 points above Starter (15%, 177 of 1,180).</p>
+    <p class="ground">Billing database · trials started 1 Jul – 30 Sep 2026 · 2,290 trials · pulled 3 Oct 2026</p>
+  </header>
+
+  <!-- AT A GLANCE: hero figure with its base (top-left), up to four tiles, the split the hero is part of -->
+  <section class="card glance" aria-label="At a glance">
+    <div>
+      <div class="label">Conversion rate</div>
+      <div class="hero-value">20%</div>
+      <div class="base">412 of 2,060 finished trials</div>
+    </div>
+    <div class="tiles">
+      <div>
+        <div class="label">Still open</div>
+        <div class="t-value">230</div>
+        <div class="t-note">Could still convert, so not in the rate</div>
+      </div>
+      <div>
+        <div class="label">Median time to convert</div>
+        <div class="t-value">6.5 days</div>
+        <div class="t-note">Trial start to first payment</div>
+      </div>
+    </div>
+    <div class="split">
+      <div class="label">How finished trials ended</div>
+      <div class="seg tall" role="img" aria-label="Finished trials: converted 412, cancelled 343, expired 1,305">
+        <span style="flex-grow:412;background:var(--s1)"></span>
+        <span style="flex-grow:343;background:var(--s2)"></span>
+        <span style="flex-grow:1305;background:var(--s3)"></span>
+      </div>
+      <ul class="legend">
+        <li><i class="sw" style="background:var(--s1)"></i>Converted<sup>1</sup> <b>412</b> · 20%</li>
+        <li><i class="sw" style="background:var(--s2)"></i>Cancelled <b>343</b> · 17%</li>
+        <li><i class="sw" style="background:var(--s3)"></i>Expired <b>1,305</b> · 63%</li>
+      </ul>
+      <ul class="notes"><li><sup>1</sup> Includes 14 trials that paid within 7 days after the trial ended.</li></ul>
+    </div>
+  </section>
+
+  <!-- SECTION: ranked bars (one measure, sorted, in the color of the state it counts; small n stays in place, muted) -->
+  <section class="card">
+    <h2>Conversion by channel</h2>
+    <p class="finding">Highest conversion: partner referral (31%, 58 of 190). Lowest: paid social (13%, 67 of 505).</p>
+    <!-- Bar width = rate ÷ highest rate. Bars start at zero; the value beside each bar carries the number, so no tooltip. -->
+    <div class="rank">
+      <div class="rrow rhead"><span class="rl">Channel</span><span class="rb"></span><span class="rv">Converted of finished</span></div>
+      <div class="rrow">
+        <span class="rl">Partner referral</span>
+        <span class="rb"><i style="width:100%"></i></span>
+        <span class="rv"><b>31%</b> · 58 of 190</span>
+      </div>
+      <div class="rrow smalln">
+        <span class="rl">Events<span class="tag">small n</span></span>
+        <span class="rb"><i style="width:81.9%"></i></span>
+        <span class="rv"><b>25%</b> · 2 of 8</span>
+      </div>
+      <div class="rrow">
+        <span class="rl">Organic search</span>
+        <span class="rb"><i style="width:76.5%"></i></span>
+        <span class="rv"><b>23%</b> · 164 of 702</span>
+      </div>
+      <div class="rrow">
+        <span class="rl">Paid search</span>
+        <span class="rb"><i style="width:60.5%"></i></span>
+        <span class="rv"><b>18%</b> · 121 of 655</span>
+      </div>
+      <div class="rrow">
+        <span class="rl">Paid social</span>
+        <span class="rb"><i style="width:43.5%"></i></span>
+        <span class="rv"><b>13%</b> · 67 of 505</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: comparison table (natural order by plan size; thin split bar, every segment has its count in a column).
+       Tooltips only on the segments whose share is printed nowhere else (the converted share is the Conversion column). -->
+  <section class="card">
+    <h2>Conversion by plan</h2>
+    <p class="finding">Conversion rises with plan size: Starter 15% (177 of 1,180), Team 25% (172 of 690), Business 33% (63 of 190).</p>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Plan</th><th>Split</th><th class="r">Finished trials</th><th class="r">Converted</th><th class="r">Cancelled</th><th class="r">Expired</th><th class="r">Conversion</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Starter</td>
+            <td class="barcell"><div class="seg thin"><span style="flex-grow:177;background:var(--s1)"></span><span style="flex-grow:212;background:var(--s2)" tabindex="0" data-tip="Starter · cancelled: 18% of finished trials"></span><span style="flex-grow:791;background:var(--s3)" tabindex="0" data-tip="Starter · expired: 67% of finished trials"></span></div></td>
+            <td class="r">1,180</td><td class="r">177</td><td class="r">212</td><td class="r">791</td><td class="r">15%</td>
+          </tr>
+          <tr>
+            <td>Team</td>
+            <td class="barcell"><div class="seg thin"><span style="flex-grow:172;background:var(--s1)"></span><span style="flex-grow:98;background:var(--s2)" tabindex="0" data-tip="Team · cancelled: 14% of finished trials"></span><span style="flex-grow:420;background:var(--s3)" tabindex="0" data-tip="Team · expired: 61% of finished trials"></span></div></td>
+            <td class="r">690</td><td class="r">172</td><td class="r">98</td><td class="r">420</td><td class="r">25%</td>
+          </tr>
+          <tr>
+            <td>Business</td>
+            <td class="barcell"><div class="seg thin"><span style="flex-grow:63;background:var(--s1)"></span><span style="flex-grow:33;background:var(--s2)" tabindex="0" data-tip="Business · cancelled: 17% of finished trials"></span><span style="flex-grow:94;background:var(--s3)" tabindex="0" data-tip="Business · expired: 49% of finished trials"></span></div></td>
+            <td class="r">190</td><td class="r">63</td><td class="r">33</td><td class="r">94</td><td class="r">33%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="legend">
+      <li><i class="sw" style="background:var(--s1)"></i>Converted</li>
+      <li><i class="sw" style="background:var(--s2)"></i>Cancelled</li>
+      <li><i class="sw" style="background:var(--s3)"></i>Expired</li>
+    </ul>
+  </section>
+
+  <!-- DEFINITIONS AND DATA: every term, source, method, caveats. Database names may appear here only. -->
+  <section class="card">
+    <h2>Definitions and data</h2>
+    <dl class="defs">
+      <dt>Trial</dt><dd>A free 14-day trial started between 1 Jul and 30 Sep 2026, one per account.</dd>
+      <dt>Finished trial</dt><dd>A trial with a final outcome on 3 Oct 2026: converted, cancelled or expired.</dd>
+      <dt>Still open</dt><dd>A trial with no outcome yet on 3 Oct 2026: still running, or ran out less than 7 days before without a payment so far. It could still convert, so it is not counted in any rate.</dd>
+      <dt>Converted</dt><dd>The account paid for the first time during the trial or within 7 days after it.</dd>
+      <dt>Cancelled</dt><dd>The user ended the trial early, without paying.</dd>
+      <dt>Expired</dt><dd>The trial ran out and no payment followed within 7 days.</dd>
+      <dt>Conversion rate</dt><dd>Converted ÷ finished trials.</dd>
+      <dt>Time to convert</dt><dd>Trial start to first payment; median of converted trials.</dd>
+      <dt>Channel</dt><dd>The first-touch acquisition channel of the account.</dd>
+      <dt>Small n</dt><dd>Fewer than 10 finished trials. The rate is shown muted and left out of rankings.</dd>
+      <dt>Source</dt><dd><code>billing.trials</code> joined with <code>billing.payments</code>, pulled 3 Oct 2026, 09:00 CEST.</dd>
+    </dl>
+  </section>
+
+</main>
+
+<div id="tip" role="tooltip" hidden></div>
+<script>
+// Tooltip for every [data-tip] element: hover, tap and keyboard focus. Screen readers get the same text as a label.
+(() => {
+  const tip = document.getElementById('tip');
+  document.querySelectorAll('[data-tip]').forEach(el => { el.setAttribute('role', 'img'); el.setAttribute('aria-label', el.dataset.tip); });
+  const show = (el, x, y) => {
+    tip.textContent = el.dataset.tip;
+    tip.hidden = false;
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.max(8, Math.min(x + 12, innerWidth - w - 8)) + 'px';
+    tip.style.top = (y - h - 12 < 8 ? y + 16 : y - h - 12) + 'px';
+  };
+  const hide = () => { tip.hidden = true; };
+  // Mouse: follow the pointer. Touch: a tap shows the tooltip, a tap elsewhere hides it.
+  document.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const el = e.target.closest('[data-tip]'); if (el) show(el, e.clientX, e.clientY); else hide(); });
+  document.addEventListener('pointerdown', e => { const el = e.target.closest('[data-tip]'); if (el) show(el, e.clientX, e.clientY); else hide(); });
+  document.addEventListener('pointerout', e => { if (e.pointerType === 'mouse' && e.target.closest('[data-tip]')) hide(); });
+  document.addEventListener('focusin', e => { const el = e.target.closest('[data-tip]'); if (el) { const r = el.getBoundingClientRect(); show(el, r.left + r.width / 2, r.top); } });
+  document.addEventListener('focusout', hide);
+  addEventListener('scroll', hide, { passive: true });
+})();
+</script>
+</body>
+</html>
